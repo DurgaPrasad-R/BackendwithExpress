@@ -1,5 +1,6 @@
 "use strict";
 const { Model } = require("sequelize");
+const { Op } = require("sequelize");
 module.exports = (sequelize, DataTypes) => {
   class Todo extends Model {
     /**
@@ -13,8 +14,73 @@ module.exports = (sequelize, DataTypes) => {
     static addTodo({ title, dueDate }) {
       return this.create({ title: title, dueDate: dueDate, completed: false });
     }
+    static async showList() {
+      console.log("My Todo list \n");
+
+      console.log("Overdue");
+      const dueYes = await this.overdue();
+      dueYes.forEach((item) => {
+        console.log(item.displayableString());
+      });
+      console.log("\n");
+
+      console.log("Due Today");
+      const dueTod = await this.dueToday();
+      dueTod.forEach((item) => {
+        console.log(item.displayableString());
+      });
+      console.log("\n");
+
+      console.log("Due Later");
+      const FutureDue = await this.dueLater();
+      FutureDue.forEach((item) => {
+        console.log(item.displayableString());
+      });
+      console.log("\n");
+    }
+
+    static async overdue() {
+      const d = new Date();
+      const Items = await Todo.findAll({
+        where: {
+          dueDate: {
+            [Op.lt]: d,
+          },
+        },
+      });
+      return Items;
+    }
+
+    static async dueToday() {
+      const d = new Date();
+      const Items = await Todo.findAll({
+        where: {
+          dueDate: {
+            [Op.eq]: d,
+          },
+        },
+      });
+      return Items;
+    }
+
+    static async dueLater() {
+      const d = new Date();
+      const Items = await Todo.findAll({
+        where: {
+          dueDate: {
+            [Op.gt]: d,
+          },
+        },
+      });
+      return Items;
+    }
+
     markAsCompleted() {
       return this.update({ completed: true });
+    }
+    displayableString() {
+      let checkbox = this.completed ? "[x]" : "[ ]";
+      return `${this.id}. ${checkbox} ${this.title} ${this.dueDate}`;
     }
   }
   Todo.init(
@@ -26,7 +92,7 @@ module.exports = (sequelize, DataTypes) => {
     {
       sequelize,
       modelName: "Todo",
-    }
+    },
   );
   return Todo;
 };
