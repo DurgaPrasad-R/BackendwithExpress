@@ -14,6 +14,16 @@ module.exports = (sequelize, DataTypes) => {
     static addTodo({ title, dueDate }) {
       return this.create({ title: title, dueDate: dueDate, completed: false });
     }
+    static async getTodos() {
+      const dueYes = await this.overdue();
+      const dueTod = await this.dueToday();
+      const FutureDue = await this.dueLater();
+      return {
+        dueYes: dueYes.length,
+        dueTod: dueTod.length,
+        futureDue: FutureDue.length,
+      };
+    }
     static async showList() {
       console.log("My Todo list \n");
 
