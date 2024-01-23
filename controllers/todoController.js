@@ -12,6 +12,7 @@ const todoController = {
           OverDue: dues.dueYes,
           dueToday: dues.dueTod,
           futureDue: dues.futureDue,
+          csrfToken: req.csrfToken(),
         });
       } else {
         res.json({
