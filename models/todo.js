@@ -19,9 +19,9 @@ module.exports = (sequelize, DataTypes) => {
       const dueTod = await this.dueToday();
       const FutureDue = await this.dueLater();
       return {
-        dueYes: dueYes.length,
-        dueTod: dueTod.length,
-        futureDue: FutureDue.length,
+        dueYes: dueYes,
+        dueTod: dueTod,
+        futureDue: FutureDue,
       };
     }
     static async showList() {

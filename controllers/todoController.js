@@ -6,8 +6,12 @@ const { Todo } = require("../models");
 const todoController = {
   getAllTodos: async (req, res) => {
     try {
-      const dueSizes = await Todo.getTodos();
-      res.render("index", { dueSizes });
+      const dues = await Todo.getTodos();
+      res.render("index", {
+        OverDue: dues.dueYes,
+        dueToday: dues.dueTod,
+        futureDue: dues.futureDue,
+      });
     } catch (error) {
       console.error(error);
       res.status(500).json({ error: "Internal Server Error" });
