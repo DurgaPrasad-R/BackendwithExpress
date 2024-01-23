@@ -6,6 +6,7 @@ const todoController = require("./controllers/todoController");
 const bodyParser = require("body-parser");
 
 app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: false }));
 app.set("view engine", "ejs");
 
 app.get("/", todoController.getAllTodos);
