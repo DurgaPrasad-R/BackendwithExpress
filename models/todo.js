@@ -18,10 +18,12 @@ module.exports = (sequelize, DataTypes) => {
       const dueYes = await this.overdue();
       const dueTod = await this.dueToday();
       const FutureDue = await this.dueLater();
+      const TasksDone = await this.completedTasks();
       return {
         dueYes: dueYes,
         dueTod: dueTod,
         futureDue: FutureDue,
+        completedTasks: TasksDone,
       };
     }
     static async showList() {
@@ -49,6 +51,14 @@ module.exports = (sequelize, DataTypes) => {
       console.log("\n");
     }
 
+    static async completedTasks() {
+      return await Todo.findAll({
+        where: {
+          completed: true,
+        },
+      });
+    }
+
     static async overdue() {
       const d = new Date();
       const Items = await Todo.findAll({
@@ -56,6 +66,7 @@ module.exports = (sequelize, DataTypes) => {
           dueDate: {
             [Op.lt]: d,
           },
+          completed: false,
         },
       });
       return Items;
@@ -68,6 +79,7 @@ module.exports = (sequelize, DataTypes) => {
           dueDate: {
             [Op.eq]: d,
           },
+          completed: false,
         },
       });
       return Items;
@@ -80,13 +92,21 @@ module.exports = (sequelize, DataTypes) => {
           dueDate: {
             [Op.gt]: d,
           },
+          completed: false,
         },
       });
       return Items;
     }
 
+    async setCompletionStatus(status) {
+      return this.update({ completed: status });
+    }
+
     markAsCompleted() {
-      return this.update({ completed: true });
+      return this.setCompletionStatus(true);
+    }
+    markAsIncomplete() {
+      return this.setCompletionStatus(false);
     }
     displayableString() {
       let checkbox = this.completed ? "[x]" : "[ ]";

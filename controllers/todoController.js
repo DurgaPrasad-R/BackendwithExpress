@@ -12,6 +12,7 @@ const todoController = {
           OverDue: dues.dueYes,
           dueToday: dues.dueTod,
           futureDue: dues.futureDue,
+          completedTasks: dues.completedTasks,
           csrfToken: req.csrfToken(),
         });
       } else {
@@ -45,6 +46,22 @@ const todoController = {
         dueDate: req.body.dueDate,
       });
       return res.redirect("/");
+    } catch (error) {
+      console.log(error);
+      return res.status(422).json(error);
+    }
+  },
+
+  updateTodoCompletion: async (req, res) => {
+    try {
+      const todo = await Todo.findByPk(req.params.id);
+      let todoCompletion;
+      if (todo.completed) {
+        todoCompletion = await todo.markAsIncomplete();
+      } else {
+        todoCompletion = await todo.markAsCompleted();
+      }
+      return res.json(todoCompletion);
     } catch (error) {
       console.log(error);
       return res.status(422).json(error);

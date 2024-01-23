@@ -9,7 +9,7 @@
     <script>
       var token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
       function updateTodo(id) {
-          const response = fetch(`/todos/${id}/markAsCompleted`, {
+          const response = fetch(`/todos/${id}`, {
             method: "PUT",
             headers: {
               "Content-Type": "application/json",
@@ -68,6 +68,7 @@
                 type="date"
                 name="dueDate"
                 class="border border-gray-300 text-gray-900 text-sm rounded w-full p-2 leading-4"
+                required
               />
             </div>
             <div class="flex-none">
@@ -87,6 +88,8 @@
           <%- include('todo',{todos:dueToday}) %>
           <h5>Due Later</h5>
           <%- include('todo',{todos:futureDue}) %>
+          <h5>Completed Tasks</h5>
+          <%- include('todo',{todos:completedTasks}) %> 
         </div>
       </div>
     </div>
