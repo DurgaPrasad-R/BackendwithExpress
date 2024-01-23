@@ -82,13 +82,13 @@
           </div>
         </form>
         <div class="mt-2">
-          <h5>Overdue</h5>
+          <h5>Overdue - <span class="text-sm bg-purple-100 px-2 rounded"><%= OverDue.length %></span></h5>
           <%- include('todo',{todos:OverDue}) %>
-          <h5>Due Today</h5>
+          <h5>Due Today - <span class="text-sm bg-purple-100 px-2 rounded"><%= dueToday.length %></span>
           <%- include('todo',{todos:dueToday}) %>
-          <h5>Due Later</h5>
+          <h5>Due Later - <span class="text-sm bg-purple-100 px-2 rounded"><%= futureDue.length %></span>
           <%- include('todo',{todos:futureDue}) %>
-          <h5>Completed Tasks</h5>
+          <h5>Completed Tasks - <span class="text-sm bg-purple-100 px-2 rounded"><%= completedTasks.length %></span>
           <%- include('todo',{todos:completedTasks}) %> 
         </div>
       </div>
