@@ -7,11 +7,19 @@ const todoController = {
   getAllTodos: async (req, res) => {
     try {
       const dues = await Todo.getTodos();
-      res.render("index", {
-        OverDue: dues.dueYes,
-        dueToday: dues.dueTod,
-        futureDue: dues.futureDue,
-      });
+      if (req.accepts("html")) {
+        res.render("index", {
+          OverDue: dues.dueYes,
+          dueToday: dues.dueTod,
+          futureDue: dues.futureDue,
+        });
+      } else {
+        res.json({
+          OverDue: dues.dueYes,
+          dueToday: dues.dueTod,
+          futureDue: dues.futureDue,
+        });
+      }
     } catch (error) {
       console.error(error);
       res.status(500).json({ error: "Internal Server Error" });
@@ -60,24 +68,16 @@ const todoController = {
 
     try {
       const todo = await Todo.findByPk(deleteId);
-
-      if (!todo) {
-        return res
-          .status(404)
-          .json({ success: false, error: "Todo not found" });
-      }
-
       const deletedTodo = await todo.destroy();
 
       if (deletedTodo) {
-        console.log(true);
+        // console.log(true);
         res.json({
           success: true,
           data: deletedTodo,
           message: "Todo deleted successfully",
         });
       } else {
-        console.log(false);
         res.json({ success: false, error: "Deletion failed" });
       }
     } catch (error) {
