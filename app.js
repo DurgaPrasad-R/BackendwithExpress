@@ -12,12 +12,15 @@ const connectEnsureLogin = require("connect-ensure-login");
 const session = require("express-session");
 const LocalStrategy = require("passport-local");
 const bcrypt = require("bcrypt");
+const flash = require("connect-flash");
+const path = require("path");
 const { User } = require("./models");
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser("shh! some secret string"));
 app.use(csrf("this_should_be_32_character_long", ["POST", "PUT", "DELETE"]));
 app.set("view engine", "ejs");
+app.set("views", path.join(__dirname, "views"));
 app.use(
   session({
     secret: "super-secret-12345678765432",
@@ -29,7 +32,11 @@ app.use(
 
 app.use(passport.initialize());
 app.use(passport.session());
-
+app.use(flash());
+app.use(function (request, response, next) {
+  response.locals.messages = request.flash();
+  next();
+});
 passport.use(
   new LocalStrategy(
     {
@@ -45,10 +52,10 @@ passport.use(
         .then(async (user) => {
           const result = await bcrypt.compare(password, user.password);
           if (result) return done(null, user);
-          else return done("Invalid password");
+          else return done(null, false, { message: "Invalid password" });
         })
         .catch((error) => {
-          return error;
+          return done(error);
         });
     },
   ),
@@ -76,7 +83,10 @@ app.post("/todos", connectEnsureLogin.ensureLoggedIn(), todoController.addTodo);
 app.post("/users", todoController.addUsers);
 app.post(
   "/session",
-  passport.authenticate("local", { failureRedirect: "/login" }),
+  passport.authenticate("local", {
+    failureRedirect: "/login",
+    failureFlash: true,
+  }),
   todoController.getSession,
 );
 app.put(

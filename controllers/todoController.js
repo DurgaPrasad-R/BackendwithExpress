@@ -41,6 +41,7 @@ const todoController = {
     });
   },
   getSession: (req, res) => {
+    console.log(req.user);
     res.redirect("/todos");
   },
   getAllTodos: async (req, res) => {
