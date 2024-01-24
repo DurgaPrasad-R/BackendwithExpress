@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Sign Up</title>
+    <meta name="csrf-token" content="<%= csrfToken %>" />
+    <script src="https://cdn.tailwindcss.com"></script>
+  </head>
+  <body>
+    <div class="grid grid-cols-6">
+      <div class="col-start-3 col-span-2">
+        <%- include("header") %>
+        <h6>Signup as New User</h6>
+        <form action="/users" method="post">
+          <div class="py-3">
+            <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
+            <label for="fName">First Name:</label>
+            <input
+              type="text"
+              id="fName"
+              name="firstName"
+              class="border border-gray-300 text-gray-900 rounded w-full p-2"
+              placeholder="Enter your first name:"
+            />
+          </div>
+          <div class="py-3">
+            <label for="lName">Last Name:</label>
+            <input
+              type="text"
+              id="lName"
+              name="lastName"
+              placeholder="Enter your last name:"
+              class="border border-gray-300 text-gray-900 text-sm rounded w-full p-2"
+            />
+          </div>
+          <div class="py-3">
+            <label for="email">Email:</label>
+            <input
+              type="email"
+              name="email"
+              id="email"
+              placeholder="Your magic mailbox"
+              class="border border-gray-300 text-gray-900 text-sm rounded w-full p-2"
+            />
+          </div>
+          <div class="py-3">
+            <label for="pass">Password:</label>
+            <input
+              type="password"
+              name="password"
+              id="pass"
+              placeholder="Guardian of your secrets"
+              class="border border-gray-300 text-gray-900 text-sm rounded w-full p-2"
+            />
+          </div>
+          <button
+            type="submit"
+            class="text-white bg-green-600 hover:bg-green-800 font-medium rounded px-5 py-2"
+          >
+            Sign up
+          </button>
+        </form>
+      </div>
+    </div>
+  </body>
+</html>

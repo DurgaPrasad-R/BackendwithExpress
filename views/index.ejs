@@ -2,95 +2,23 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="csrf-token" content="<%= csrfToken %>">
+    <meta name="csrf-token" content="<%= csrfToken %>" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>To-Do Manager</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-      var token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
-      function updateTodo(id) {
-          const response = fetch(`/todos/${id}`, {
-            method: "PUT",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              "_csrf": token
-            })
-          })
-            .then((res)=>{
-              if (res.ok){
-                window.location.reload();
-              }
-            }).catch((error)=> {
-          console.error("Error:", error)
-            })
-        }
-      function deleteTodo(id) {
-          const response = fetch(`/todos/${id}/delete`, {
-            method: "delete",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              "_csrf": token
-            })
-          })
-            .then((res)=>{
-              if (res.ok){
-                window.location.reload();
-              }
-            }).catch((error)=> {
-          console.error("Error:", error)
-            })
-        }
-    </script>
   </head>
   <body>
     <div class="grid grid-cols-6">
       <div class="col-start-3 col-span-2">
         <%- include('header') %>
-        <form action="/todos" method="POST">
-          <input type="hidden" name="_csrf" value="<%= csrfToken %>">
-          <div class="flex gap-2 py-4">
-            <div class="flex-auto w-64">
-              <input
-                type="text"
-                name="title"
-                class="border border-gray-300 text-gray-900 text-sm rounded w-full p-2"
-                placeholder="What's next?"
-                autofocus
-                required
-              />
-            </div>
-            <div class="flex-auto w-32">
-              <input
-                type="date"
-                name="dueDate"
-                class="border border-gray-300 text-gray-900 text-sm rounded w-full p-2 leading-4"
-                required
-              />
-            </div>
-            <div class="flex-none">
-              <button
-                type="submit"
-                class="text-white bg-green-600 hover:bg-green-700 font-medium rounded text-sm px-5 py-2 mr-2 mb-2"
-              >
-                Add
-              </button>
-            </div>
-          </div>
-        </form>
-        <div class="mt-2">
-          <h5>Overdue - <span class="text-sm bg-purple-100 px-2 rounded"><%= OverDue.length %></span></h5>
-          <%- include('todo',{todos:OverDue}) %>
-          <h5>Due Today - <span class="text-sm bg-purple-100 px-2 rounded"><%= dueToday.length %></span>
-          <%- include('todo',{todos:dueToday}) %>
-          <h5>Due Later - <span class="text-sm bg-purple-100 px-2 rounded"><%= futureDue.length %></span>
-          <%- include('todo',{todos:futureDue}) %>
-          <h5>Completed Tasks - <span class="text-sm bg-purple-100 px-2 rounded"><%= completedTasks.length %></span>
-          <%- include('todo',{todos:completedTasks}) %> 
-        </div>
+        <p class="py-2">Welcome to To-Do Manager</p>
+        <p class="py-2">
+          New here? <a href="/signup" class="text-green-600">Sign-up now</a>
+        </p>
+        <p class="py-2">
+          Already have an account?
+          <a href="/login" class="text-green-600">Sign-in</a>
+        </p>
       </div>
     </div>
   </body>

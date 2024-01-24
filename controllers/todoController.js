@@ -1,14 +1,60 @@
+/* eslint-disable no-undef */
 /* eslint-disable comma-dangle */
 /* eslint-disable semi */
 /* eslint-disable quotes */
-const { Todo } = require("../models");
-
+const { Todo, User } = require("../models");
+const bcrypt = require("bcrypt");
+const saltRounds = 10;
 const todoController = {
-  getAllTodos: async (req, res) => {
+  signup: (req, res) => {
+    res.render("signup", { csrfToken: req.csrfToken() });
+  },
+  addUsers: async (req, res) => {
+    const hasedPwd = await bcrypt.hash(req.body.password, saltRounds);
+    console.log(hasedPwd);
     try {
-      const dues = await Todo.getTodos();
+      const user = await User.create({
+        firstName: req.body.firstName,
+        lastName: req.body.lastName,
+        email: req.body.email,
+        password: hasedPwd,
+      });
+      req.login(user, (err) => {
+        if (err) {
+          console.log(err);
+        }
+        res.redirect("/todos");
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  },
+  getLogin: (req, res) => {
+    res.render("login", { csrfToken: req.csrfToken() });
+  },
+  getSignout: (req, res) => {
+    req.logout((err) => {
+      if (err) {
+        return next(err);
+      }
+      res.redirect("/");
+    });
+  },
+  getSession: (req, res) => {
+    res.redirect("/todos");
+  },
+  getAllTodos: async (req, res) => {
+    res.render("index", {
+      csrfToken: req.csrfToken(),
+    });
+  },
+
+  showList: async (req, res) => {
+    try {
+      const loggedInuser = req.user.id;
+      const dues = await Todo.getTodos(loggedInuser);
       if (req.accepts("html")) {
-        res.render("index", {
+        res.render("todos", {
           OverDue: dues.dueYes,
           dueToday: dues.dueTod,
           futureDue: dues.futureDue,
@@ -28,24 +74,15 @@ const todoController = {
     }
   },
 
-  showList: async (req, res) => {
-    try {
-      await Todo.showList();
-      res.send("Todo Displayed in console.");
-    } catch (error) {
-      console.log(error);
-      res.status(500).json({ error: "Internal Server Error" });
-    }
-  },
-
   addTodo: async (req, res) => {
     console.log("Creating a todo", req.body);
     try {
       await Todo.addTodo({
         title: req.body.title,
         dueDate: req.body.dueDate,
+        userId: req.user.id,
       });
-      return res.redirect("/");
+      return res.redirect("/todos");
     } catch (error) {
       console.log(error);
       return res.status(422).json(error);

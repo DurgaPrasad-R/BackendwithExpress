@@ -10,15 +10,23 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
+      Todo.belongsTo(models.User, {
+        foreignKey: "userId",
+      });
     }
-    static addTodo({ title, dueDate }) {
-      return this.create({ title: title, dueDate: dueDate, completed: false });
+    static addTodo({ title, dueDate, userId }) {
+      return this.create({
+        title: title,
+        dueDate: dueDate,
+        completed: false,
+        userId,
+      });
     }
-    static async getTodos() {
-      const dueYes = await this.overdue();
-      const dueTod = await this.dueToday();
-      const FutureDue = await this.dueLater();
-      const TasksDone = await this.completedTasks();
+    static async getTodos(loggedInuser) {
+      const dueYes = await this.overdue(loggedInuser);
+      const dueTod = await this.dueToday(loggedInuser);
+      const FutureDue = await this.dueLater(loggedInuser);
+      const TasksDone = await this.completedTasks(loggedInuser);
       return {
         dueYes: dueYes,
         dueTod: dueTod,
@@ -51,47 +59,51 @@ module.exports = (sequelize, DataTypes) => {
       console.log("\n");
     }
 
-    static async completedTasks() {
+    static async completedTasks(userId) {
       return await Todo.findAll({
         where: {
           completed: true,
+          userId,
         },
       });
     }
 
-    static async overdue() {
+    static async overdue(userId) {
       const d = new Date();
       const Items = await Todo.findAll({
         where: {
           dueDate: {
             [Op.lt]: d,
           },
+          userId,
           completed: false,
         },
       });
       return Items;
     }
 
-    static async dueToday() {
+    static async dueToday(userId) {
       const d = new Date();
       const Items = await Todo.findAll({
         where: {
           dueDate: {
             [Op.eq]: d,
           },
+          userId,
           completed: false,
         },
       });
       return Items;
     }
 
-    static async dueLater() {
+    static async dueLater(userId) {
       const d = new Date();
       const Items = await Todo.findAll({
         where: {
           dueDate: {
             [Op.gt]: d,
           },
+          userId,
           completed: false,
         },
       });
